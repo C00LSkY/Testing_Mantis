@@ -1,5 +1,7 @@
 
-from model.project import ProjectData
+from model.projects import ProjectData
+import random
+import stringb
 
 
 class ProjectHelper:
@@ -20,14 +22,14 @@ class ProjectHelper:
             wd.find_element_by_link_text("Manage").click()
             wd.find_element_by_link_text("Manage Projects").click()
 
-    def create_new_project(self, project):
+    def create_new_project(self, projects):
         wd = self.app.wd
         self.open_manage_page()
         self.open_manage_project_page()
         wd.find_element_by_xpath("//input[@value='Create New Project']").click()
         wd.find_element_by_name("name").click()
         wd.find_element_by_name("name").clear()
-        wd.find_element_by_name("name").send_keys(project.name)
+        wd.find_element_by_name("name").send_keys("testname" + self.random_string())
         if not wd.find_element_by_xpath("//table[@class='width75']/tbody/tr[3]/td[2]/select//option[3]").is_selected():
             wd.find_element_by_xpath("//table[@class='width75']/tbody/tr[3]/td[2]/select//option[3]").click()
         if wd.find_element_by_name("inherit_global").is_selected():
@@ -36,9 +38,14 @@ class ProjectHelper:
             wd.find_element_by_name("inherit_global").click()
         wd.find_element_by_name("description").click()
         wd.find_element_by_name("description").clear()
-        wd.find_element_by_name("description").send_keys(project.description)
-        wd.find_element_by_css_selector("input.button").click()
-        self.open_manage_project_page()
+        wd.find_element_by_name("description").send_keys("ewuryqiuewyriuewqyriuewqyriuweyriuw" + self.random_string())
+        wd.find_element_by_css_selector("input[value='Add Project']").click()
+        wd.find_element_by_link_text("Proceed").click()
+        self.project_cashe = None
+
+    def random_string(self):
+        symbols = string.ascii_letters + string.digits
+        return "".join([random.choice(symbols) for i in range(random.randrange(12))])
 
     project_cashe = None
 
@@ -49,9 +56,8 @@ class ProjectHelper:
             self.project_cashe = []
             for element in wd.find_elements_by_xpath("//tr[td/a[contains(@href, 'manage_proj_edit_page.php?project_id=')]]"):
                 cell = element.find_elements_by_tag_name("td")
-                link_id = cell[0].element.find_element_by_tag_name("a").get_attribute("href")
-                id = link_id[36:]
-                print(id)
+                link_id = cell[0].find_element_by_tag_name("a").get_attribute("href")
+                id = link_id[70:]
                 name = cell[0].text
                 status = cell[1].text
                 if cell[2].text == "X":
